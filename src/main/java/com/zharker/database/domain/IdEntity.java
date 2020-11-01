@@ -8,6 +8,7 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.MappedSuperclass;
+import java.util.Objects;
 import java.util.UUID;
 
 @Setter
@@ -18,11 +19,19 @@ import java.util.UUID;
 @SuperBuilder
 public abstract class IdEntity extends BaseEntity {
 
-    protected String id;
+    protected String id = UUID.randomUUID().toString();
 
-    public void setId() {
-        if (StringUtils.isEmpty(id)) {
-            id = UUID.randomUUID().toString();
-        }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        IdEntity idEntity = (IdEntity) o;
+        return Objects.equals(id, idEntity.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id);
     }
 }

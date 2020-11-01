@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -41,5 +42,9 @@ public class UserService {
     public String save(User user) {
         userRepo.save(user);
         return user.getId();
+    }
+
+    public List<User> findByDateOfBirthLessThanEqual(Date date){
+        return userRepo.findByDateOfBirthLessThanEqual(date);
     }
 }

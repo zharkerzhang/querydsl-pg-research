@@ -4,21 +4,29 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.zharker.database.data.customized.Array;
 import com.zharker.database.data.customized.Jsonb;
 import com.zharker.database.domain.*;
+import com.zharker.database.utils.Utils;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.persistence.EntityManager;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 
+@Slf4j
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Config.class)
 public class UserServiceTest {
@@ -77,7 +85,6 @@ public class UserServiceTest {
     @Sql(scripts = "/sql/clean-up.sql", executionPhase = AFTER_TEST_METHOD)
     public void save(){
         User user = new User();
-        user.setId();
         user.setGender(Gender.male);
         user.setAge(33);
 //        user.setJobs(new Job[]{Job.Doctor,Job.Driver,Job.Manager});
@@ -101,5 +108,35 @@ public class UserServiceTest {
         assertFalse(users.isEmpty());
         assertTrue(users.size() == 1);
         assertEquals(users.stream().findFirst().orElse(null).getGender(),Gender.male);
+    }
+
+    @Test
+    public void saveDateTimeTest(){
+
+        User user = new User();
+        user.setGender(Gender.male);
+        user.setAge(33);
+        Date date = Date.from(Instant.now());
+        user.setDateOfBirth(date);
+        user.setDateOfDeath(date);
+        log.info(date.toString());
+        userService.save(user);
+
+//        List<User> users = userService.dynamicSearch(QUser.user.dateOfBirth.eq(date));
+        List<User> users = userService.findByDateOfBirthLessThanEqual(date);
+        users.stream().map(User::getId).forEach(System.out::println);
+
+    }
+
+    @Test
+    public void utilDate2StringTest(){
+
+        Date date = Date.from(Instant.now());
+        String dateStr = Utils.date2String(date);
+        log.info(dateStr);
+
+        Date date1 = Utils.string2Date(dateStr);
+        Assert.assertEquals(date1,date);
+
     }
 }

@@ -3,7 +3,6 @@ package com.zharker.database.domain;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.zharker.database.utils.AgeRangeConverter;
 import com.zharker.database.utils.Constants;
-import com.zharker.database.utils.JobConverter;
 import com.zharker.database.utils.RawJsonDeserializer;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +24,9 @@ public class User extends IdEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateOfBirth;
+
+    @Temporal(TemporalType.DATE)
+    private Date dateOfDeath;
 
 
     private String country;
